@@ -4,7 +4,6 @@ import type { PensionType } from '../types';
 
 interface EmptyStateProps {
   onAddPension: () => void;
-  onLoadDemo: () => void;
 }
 
 const features: { icon: React.ReactNode; title: string; desc: string }[] = [
@@ -24,7 +23,7 @@ const features: { icon: React.ReactNode; title: string; desc: string }[] = [
       </svg>
     ),
     title: 'Steuerberechnung',
-    desc: 'ESt, KV/PV-Abzüge und Kirchensteuer automatisch berechnet',
+    desc: 'ESt und KV/PV-Abzüge automatisch berechnet',
   },
   {
     icon: (
@@ -44,7 +43,7 @@ const pensionTypes: { type: PensionType; example: string }[] = [
   { type: 'riester', example: '180 €/Monat' },
 ];
 
-export const EmptyState: React.FC<EmptyStateProps> = ({ onAddPension, onLoadDemo }) => {
+export const EmptyState: React.FC<EmptyStateProps> = ({ onAddPension }) => {
   return (
     <div className="space-y-6">
       {/* Hero card */}
@@ -73,15 +72,6 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ onAddPension, onLoadDemo
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
             Erste Rente hinzufügen
-          </button>
-          <button
-            onClick={onLoadDemo}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            Demo-Daten laden
           </button>
         </div>
       </div>

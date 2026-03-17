@@ -51,6 +51,8 @@ export interface TaxSettings {
 export interface Settings {
   theme: Theme;
   tax: TaxSettings;
+  /** Planned retirement date (ISO date string, e.g. '2028-01-01') */
+  retirementDate: string;
 }
 
 // ─── Calculation Results ───────────────────────────────────────────────────────

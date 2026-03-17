@@ -17,9 +17,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   const [confirmClear, setConfirmClear] = useState(false);
 
   const [kvZusatz, setKvZusatz] = useState(String(settings.tax.kvZusatzbeitrag));
-  const [kirchensteuerRate, setKirchensteuerRate] = useState(
-    String(settings.tax.kirchensteuerRate),
-  );
 
   const handleTheme = (theme: Theme) => {
     onSave({ ...settings, theme });
@@ -39,25 +36,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     } else {
       setKvZusatz(String(settings.tax.kvZusatzbeitrag));
     }
-  };
-
-  const handleKirchensteuerRateBlur = () => {
-    const val = parseFloat(kirchensteuerRate.replace(',', '.'));
-    if (!isNaN(val) && val > 0 && val <= 20) {
-      handleTaxChange('kirchensteuerRate', val);
-    } else {
-      setKirchensteuerRate(String(settings.tax.kirchensteuerRate));
-    }
-  };
-
-  const handleSetKirchensteuerRate8 = () => {
-    setKirchensteuerRate('8');
-    handleTaxChange('kirchensteuerRate', 8);
-  };
-
-  const handleSetKirchensteuerRate9 = () => {
-    setKirchensteuerRate('9');
-    handleTaxChange('kirchensteuerRate', 9);
   };
 
   const handleClearClick = () => {
@@ -95,6 +73,22 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
+        </div>
+
+        {/* Renteneintritt */}
+        <div className="space-y-2">
+          <p className="text-gray-700 dark:text-slate-300 text-sm font-medium">Renteneintritt</p>
+          <label className="block">
+            <span className="text-gray-600 dark:text-slate-400 text-xs">
+              Geplantes Renteneintritts-Datum
+            </span>
+            <input
+              type="date"
+              value={settings.retirementDate}
+              onChange={(e) => onSave({ ...settings, retirementDate: e.target.value })}
+              className="mt-1 w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </label>
         </div>
 
         {/* Theme */}
@@ -181,51 +175,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 </span>
               </label>
             </>
-          )}
-        </div>
-
-        {/* Kirchensteuer */}
-        <div className="space-y-3">
-          <p className="text-gray-700 dark:text-slate-300 text-sm font-medium">Kirchensteuer</p>
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={settings.tax.kirchensteuer}
-              onChange={(e) => handleTaxChange('kirchensteuer', e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700 dark:text-slate-300">
-              Kirchensteuerpflichtig
-            </span>
-          </label>
-          {settings.tax.kirchensteuer && (
-            <label className="block">
-              <span className="text-gray-600 dark:text-slate-400 text-xs">Kirchensteuersatz (%)</span>
-              <div className="flex gap-2 mt-1">
-                <button
-                  onClick={handleSetKirchensteuerRate8}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-medium border transition-colors ${settings.tax.kirchensteuerRate === 8 ? 'bg-blue-600 border-blue-500 text-white' : 'border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700'}`}
-                >
-                  8 % (Bayern, BW)
-                </button>
-                <button
-                  onClick={handleSetKirchensteuerRate9}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-medium border transition-colors ${settings.tax.kirchensteuerRate === 9 ? 'bg-blue-600 border-blue-500 text-white' : 'border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700'}`}
-                >
-                  9 % (übrige)
-                </button>
-                <input
-                  type="number"
-                  min="0"
-                  max="20"
-                  step="0.1"
-                  value={kirchensteuerRate}
-                  onChange={(e) => setKirchensteuerRate(e.target.value)}
-                  onBlur={handleKirchensteuerRateBlur}
-                  className="w-16 px-2 py-1.5 rounded-lg text-xs border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </label>
           )}
         </div>
 

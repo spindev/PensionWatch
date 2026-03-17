@@ -12,6 +12,7 @@ const DEFAULT_SETTINGS: Settings = {
     kirchensteuer: false,
     kirchensteuerRate: 9,
   },
+  retirementDate: '',
 };
 
 export function loadSettings(): Settings {

@@ -46,9 +46,6 @@ export const PensionTable: React.FC<PensionTableProps> = ({
                 Brutto / Jahr
               </th>
               <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                Rentenbeginn
-              </th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                 Aktionen
               </th>
             </tr>
@@ -86,9 +83,6 @@ export const PensionTable: React.FC<PensionTableProps> = ({
                     maximumFractionDigits: 2,
                   })}{' '}
                   €
-                </td>
-                <td className="px-4 py-3 text-right text-gray-600 dark:text-slate-300">
-                  {p.startYear}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-1">
@@ -167,10 +161,6 @@ export const PensionTable: React.FC<PensionTableProps> = ({
                 })}{' '}
                 €
               </span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500 dark:text-slate-400 text-xs">Rentenbeginn</span>
-              <span className="text-gray-600 dark:text-slate-300 text-xs">{p.startYear}</span>
             </div>
           </div>
         ))}

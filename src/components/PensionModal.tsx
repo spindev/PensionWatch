@@ -4,6 +4,7 @@ import { PENSION_TYPE_LABELS } from '../types';
 
 interface PensionModalProps {
   pension?: PensionEntry | null;
+  retirementYear: number;
   onSave: (pension: PensionEntry) => void;
   onClose: () => void;
 }
@@ -22,6 +23,7 @@ function generateId(): string {
 
 export const PensionModal: React.FC<PensionModalProps> = ({
   pension,
+  retirementYear,
   onSave,
   onClose,
 }) => {
@@ -32,9 +34,6 @@ export const PensionModal: React.FC<PensionModalProps> = ({
   const [monthlyGrossRaw, setMonthlyGrossRaw] = useState(
     pension ? String(pension.monthlyGross) : '',
   );
-  const [startYear, setStartYear] = useState(
-    pension ? String(pension.startYear) : String(new Date().getFullYear()),
-  );
   const [notes, setNotes] = useState(pension?.notes ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -43,7 +42,6 @@ export const PensionModal: React.FC<PensionModalProps> = ({
     setName(pension?.name ?? '');
     setType(pension?.type ?? 'gesetzlich');
     setMonthlyGrossRaw(pension ? String(pension.monthlyGross) : '');
-    setStartYear(pension ? String(pension.startYear) : String(new Date().getFullYear()));
     setNotes(pension?.notes ?? '');
     setErrors({});
   }, [pension]);
@@ -53,9 +51,6 @@ export const PensionModal: React.FC<PensionModalProps> = ({
     if (!name.trim()) e['name'] = 'Name darf nicht leer sein.';
     const gross = parseFloat(monthlyGrossRaw.replace(',', '.'));
     if (isNaN(gross) || gross < 0) e['monthlyGross'] = 'Bitte einen gültigen Betrag eingeben.';
-    const year = parseInt(startYear, 10);
-    if (isNaN(year) || year < 1950 || year > 2100)
-      e['startYear'] = 'Bitte ein gültiges Jahr eingeben (1950–2100).';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -68,18 +63,18 @@ export const PensionModal: React.FC<PensionModalProps> = ({
       name: name.trim(),
       type,
       monthlyGross: parseFloat(monthlyGrossRaw.replace(',', '.')),
-      startYear: parseInt(startYear, 10),
+      startYear: retirementYear,
       notes: notes.trim() || undefined,
     });
   };
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center p-4 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5"
+        className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5 my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -155,31 +150,6 @@ export const PensionModal: React.FC<PensionModalProps> = ({
             />
             {errors['monthlyGross'] && (
               <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors['monthlyGross']}</p>
-            )}
-          </div>
-
-          {/* Start year */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-              Rentenbeginn (Jahr)
-            </label>
-            <input
-              type="number"
-              min="1950"
-              max="2100"
-              step="1"
-              value={startYear}
-              onChange={(e) => setStartYear(e.target.value)}
-              placeholder={String(new Date().getFullYear())}
-              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {type === 'gesetzlich' && (
-              <p className="text-gray-400 dark:text-slate-500 text-xs mt-1">
-                Wird für den Besteuerungsanteil (§ 22 EStG) verwendet.
-              </p>
-            )}
-            {errors['startYear'] && (
-              <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors['startYear']}</p>
             )}
           </div>
 
