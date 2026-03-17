@@ -69,8 +69,9 @@ export function calcPensionDeductions(
     case 'ruerup':
     case 'riester':
     case 'privat':
+    case 'etf':
     default:
-      // Private/subsidised pensions are generally KV-frei for GKV members
+      // Private/subsidised pensions and ETF withdrawals are generally KV-frei for GKV members
       kvMonthly = 0;
       pvMonthly = 0;
       break;
@@ -103,6 +104,10 @@ function calcTaxableAmount(entry: PensionEntry): number {
     case 'privat':
       // Simplified: use Ertragsanteil approximation (here: 18% for age 65)
       return annualGross * 0.18;
+    case 'etf':
+      // 30% Teilfreistellung for Aktienfonds (equity ETFs); 70% of gains are taxable.
+      // Note: Abgeltungssteuer (25% + 5.5% Soli = 26.375%) applies in practice.
+      return annualGross * 0.70;
     default:
       return annualGross;
   }

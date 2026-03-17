@@ -15,10 +15,26 @@ const PENSION_TYPES: PensionType[] = [
   'betrieblich',
   'riester',
   'privat',
+  'etf',
 ];
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+/**
+ * Parses a German-formatted number string to a float.
+ * Accepts both German format (1.500,00) and standard format (1500.00).
+ * Returns NaN for invalid input – callers must check with isNaN().
+ */
+function parseGermanNumber(raw: string): number {
+  const trimmed = raw.trim();
+  if (trimmed.includes(',')) {
+    // German format: periods are thousand separators, comma is decimal separator
+    return parseFloat(trimmed.replace(/\./g, '').replace(',', '.'));
+  }
+  // Standard format: period is decimal separator
+  return parseFloat(trimmed);
 }
 
 export const PensionModal: React.FC<PensionModalProps> = ({
@@ -49,8 +65,8 @@ export const PensionModal: React.FC<PensionModalProps> = ({
   const validate = (): boolean => {
     const e: Record<string, string> = {};
     if (!name.trim()) e['name'] = 'Name darf nicht leer sein.';
-    const gross = parseFloat(monthlyGrossRaw.replace(',', '.'));
-    if (isNaN(gross) || gross < 0) e['monthlyGross'] = 'Bitte einen gültigen Betrag eingeben.';
+    const gross = parseGermanNumber(monthlyGrossRaw);
+    if (isNaN(gross) || gross < 0) e['monthlyGross'] = 'Bitte einen gültigen Betrag eingeben (z. B. 1.500,00).';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -62,7 +78,7 @@ export const PensionModal: React.FC<PensionModalProps> = ({
       id: pension?.id ?? generateId(),
       name: name.trim(),
       type,
-      monthlyGross: parseFloat(monthlyGrossRaw.replace(',', '.')),
+      monthlyGross: parseGermanNumber(monthlyGrossRaw),
       startYear: retirementYear,
       notes: notes.trim() || undefined,
     });
@@ -134,18 +150,50 @@ export const PensionModal: React.FC<PensionModalProps> = ({
             </select>
           </div>
 
+          {/* ETF taxation info */}
+          {type === 'etf' && (
+            <div className="rounded-lg border border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-900/20 p-3 text-xs space-y-1.5">
+              <p className="font-semibold text-teal-800 dark:text-teal-300 flex items-center gap-1">
+                <span>ℹ</span>
+                <span>Besteuerung ETF-Auszahlplan</span>
+              </p>
+              <ul className="space-y-1 text-teal-700 dark:text-teal-400">
+                <li>
+                  <span className="font-medium">Abgeltungssteuer:</span> 25 % auf Kapitalerträge
+                  zzgl. 5,5 % Solidaritätszuschlag (= 26,375 % gesamt)
+                </li>
+                <li>
+                  <span className="font-medium">Teilfreistellung:</span> 30 % steuerfrei bei
+                  Aktien-ETFs – nur 70 % der Erträge sind steuerpflichtig
+                </li>
+                <li>
+                  <span className="font-medium">Sparerpauschbetrag:</span> 1.000 € p. a.
+                  (Einzelveranlagung) / 2.000 € (Zusammenveranlagung)
+                </li>
+                <li>
+                  <span className="font-medium">Keine KV/PV-Pflicht</span> für
+                  GKV-Versicherte (Kapitalerträge sind sozialabgabenfrei)
+                </li>
+              </ul>
+              <p className="text-teal-600 dark:text-teal-500 italic">
+                Hinweis: Die Berechnung hier vereinfacht die tatsächliche Abgeltungssteuer
+                durch den progressiven Steuertarif – für eine genaue Steuerauskunft bitte
+                einen Steuerberater hinzuziehen.
+              </p>
+            </div>
+          )}
+
           {/* Monthly gross */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Monatliche Brutto-Rente (€)
             </label>
             <input
-              type="number"
-              min="0"
-              step="any"
+              type="text"
+              inputMode="decimal"
               value={monthlyGrossRaw}
               onChange={(e) => setMonthlyGrossRaw(e.target.value)}
-              placeholder="z. B. 1500.00"
+              placeholder="z. B. 1.500,00"
               className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {errors['monthlyGross'] && (
