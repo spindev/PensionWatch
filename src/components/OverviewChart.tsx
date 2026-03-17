@@ -72,7 +72,7 @@ export const OverviewChart: React.FC<OverviewChartProps> = ({
           color="bg-orange-400"
           max={breakdown.totalGrossMonthly}
           infoButton={
-            <div className="relative" ref={detailsRef}>
+            <div ref={detailsRef}>
               <button
                 onClick={() => setShowKvDetails((v) => !v)}
                 className="ml-1 w-4 h-4 rounded-full bg-gray-200 dark:bg-slate-600 text-gray-500 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors flex items-center justify-center flex-shrink-0 text-[10px] font-bold leading-none"
@@ -81,7 +81,7 @@ export const OverviewChart: React.FC<OverviewChartProps> = ({
                 ?
               </button>
               {showKvDetails && (
-                <div className="absolute left-0 top-6 z-50 w-64 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl shadow-xl p-3 space-y-2 text-xs">
+                <div className="absolute left-0 top-full mt-1 z-50 w-64 max-w-full bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl shadow-xl p-3 space-y-2 text-xs">
                   <p className="font-semibold text-gray-800 dark:text-white">Details Sozialabgaben</p>
                   <div className="space-y-1.5">
                     <div className="flex justify-between">
@@ -121,7 +121,7 @@ export const OverviewChart: React.FC<OverviewChartProps> = ({
             color="bg-rose-400"
             max={breakdown.totalGrossMonthly}
             infoButton={
-              <div className="relative" ref={taxDetailsRef}>
+              <div ref={taxDetailsRef}>
                 <button
                   onClick={() => setShowTaxDetails((v) => !v)}
                   className="ml-1 w-4 h-4 rounded-full bg-gray-200 dark:bg-slate-600 text-gray-500 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors flex items-center justify-center flex-shrink-0 text-[10px] font-bold leading-none"
@@ -130,7 +130,7 @@ export const OverviewChart: React.FC<OverviewChartProps> = ({
                   ?
                 </button>
                 {showTaxDetails && (
-                  <div className="absolute left-0 bottom-6 z-50 w-72 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl shadow-xl p-3 space-y-2 text-xs">
+                  <div className="absolute left-0 bottom-full mb-1 z-50 w-72 max-w-full bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl shadow-xl p-3 space-y-2 text-xs">
                     <p className="font-semibold text-gray-800 dark:text-white">Details Kapitalabgaben</p>
                     <p className="text-gray-400 dark:text-slate-500 text-[11px] leading-snug">
                       Auf Erträge aus ETF-Sparplänen wird Abgeltungsteuer erhoben. Der Sparerpauschbetrag
@@ -183,8 +183,8 @@ interface SummaryRowProps {
 const SummaryRow: React.FC<SummaryRowProps> = ({ label, value, color, max, highlight, infoButton }) => {
   const pct = max > 0 ? Math.min(100, (value / max) * 100) : 0;
   return (
-    <div className="flex items-center gap-3">
-      <span className={`text-xs w-48 flex-shrink-0 flex items-center ${highlight ? 'font-semibold text-gray-900 dark:text-white' : 'text-gray-500 dark:text-slate-400'}`}>
+    <div className="relative flex items-center gap-3">
+      <span className={`text-xs w-28 sm:w-48 flex-shrink-0 flex items-center ${highlight ? 'font-semibold text-gray-900 dark:text-white' : 'text-gray-500 dark:text-slate-400'}`}>
         {label}
         {infoButton}
       </span>
@@ -194,7 +194,7 @@ const SummaryRow: React.FC<SummaryRowProps> = ({ label, value, color, max, highl
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className={`text-xs w-24 text-right flex-shrink-0 tabular-nums ${highlight ? 'font-bold text-emerald-600 dark:text-emerald-400' : 'text-gray-700 dark:text-slate-300'}`}>
+      <span className={`text-xs w-20 sm:w-24 text-right flex-shrink-0 tabular-nums ${highlight ? 'font-bold text-emerald-600 dark:text-emerald-400' : 'text-gray-700 dark:text-slate-300'}`}>
         {value.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
       </span>
     </div>
