@@ -6,7 +6,7 @@ const DEFAULT_SETTINGS: Settings = {
   theme: 'dark',
   tax: {
     taxYear: 2024,
-    hasChildren: false,
+    hasChildren: true,
     statutorilyInsured: true,
     kvZusatzbeitrag: 1.7,
     kirchensteuer: false,
