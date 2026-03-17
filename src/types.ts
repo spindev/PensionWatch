@@ -1,6 +1,6 @@
 // ─── Pension Types ────────────────────────────────────────────────────────────
 
-export type PensionType = 'gesetzlich' | 'ruerup' | 'betrieblich' | 'riester' | 'privat';
+export type PensionType = 'gesetzlich' | 'ruerup' | 'betrieblich' | 'riester' | 'privat' | 'etf';
 
 export const PENSION_TYPE_LABELS: Record<PensionType, string> = {
   gesetzlich: 'Gesetzliche Rente',
@@ -8,6 +8,7 @@ export const PENSION_TYPE_LABELS: Record<PensionType, string> = {
   betrieblich: 'Betriebliche Altersvorsorge',
   riester: 'Riester-Rente',
   privat: 'Private Rente',
+  etf: 'ETF-Sparplan',
 };
 
 export const PENSION_TYPE_COLORS: Record<PensionType, string> = {
@@ -16,6 +17,7 @@ export const PENSION_TYPE_COLORS: Record<PensionType, string> = {
   betrieblich: '#10b981',
   riester: '#f59e0b',
   privat: '#ec4899',
+  etf: '#06b6d4',
 };
 
 export interface PensionEntry {
@@ -83,6 +85,14 @@ export interface TaxBreakdown {
   incomeTaxAnnual: number;
   /** Monthly income tax */
   incomeTaxMonthly: number;
+  /** Annual capital gains tax (Abgeltungsteuer) on ETF income */
+  kapitalertragsteuerAnnual: number;
+  /** Monthly capital gains tax */
+  kapitalertragsteuerMonthly: number;
+  /** Annual Solidaritätszuschlag on capital gains tax */
+  soliAnnual: number;
+  /** Monthly Solidaritätszuschlag */
+  soliMonthly: number;
   /** Annual church tax */
   kirchensteuerAnnual: number;
   /** Monthly church tax */

@@ -15,6 +15,7 @@ const PENSION_TYPES: PensionType[] = [
   'betrieblich',
   'riester',
   'privat',
+  'etf',
 ];
 
 function generateId(): string {
