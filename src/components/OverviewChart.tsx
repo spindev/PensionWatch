@@ -1,10 +1,8 @@
 import React from 'react';
 import type { TaxBreakdown } from '../types';
-import type { TaxSettings } from '../types';
 
 interface OverviewChartProps {
   breakdown: TaxBreakdown;
-  taxSettings: TaxSettings;
 }
 
 const fmt = (v: number) =>
@@ -12,7 +10,6 @@ const fmt = (v: number) =>
 
 export const OverviewChart: React.FC<OverviewChartProps> = ({
   breakdown,
-  taxSettings,
 }) => {
   if (breakdown.totalGrossMonthly === 0) return null;
 
@@ -29,15 +26,15 @@ export const OverviewChart: React.FC<OverviewChartProps> = ({
           max={breakdown.totalGrossMonthly}
         />
         <SummaryRow
-          label={`KV + PV${taxSettings.statutorilyInsured ? ` (${fmt(breakdown.totalKvMonthly)} + ${fmt(breakdown.totalPvMonthly)})` : ' (privat versichert)'}`}
-          value={breakdown.totalSocialMonthly}
-          color="bg-orange-400"
-          max={breakdown.totalGrossMonthly}
-        />
-        <SummaryRow
           label="Einkommensteuer"
           value={breakdown.incomeTaxMonthly}
           color="bg-red-500"
+          max={breakdown.totalGrossMonthly}
+        />
+        <SummaryRow
+          label={`Sozialabgaben (${fmt(breakdown.totalKvMonthly)} + ${fmt(breakdown.totalPvMonthly)})`}
+          value={breakdown.totalSocialMonthly}
+          color="bg-orange-400"
           max={breakdown.totalGrossMonthly}
         />
         <div className="border-t border-gray-200 dark:border-slate-700 pt-2">
