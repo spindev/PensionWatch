@@ -18,6 +18,7 @@ function App() {
   const [page, setPage] = useState<Page>('dashboard');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editPension, setEditPension] = useState<PensionEntry | null>(null);
+  const [retirementMode, setRetirementMode] = useState<'planned' | 'current'>('planned');
 
   // Apply theme to document root
   useEffect(() => {
@@ -66,13 +67,22 @@ function App() {
     setPage('dashboard');
   }, []);
 
-  const breakdown = calcTaxBreakdown(pensions, settings.tax);
+  const currentYear = new Date().getFullYear();
+
+  const breakdown = calcTaxBreakdown(
+    retirementMode === 'current'
+      ? pensions.map((p) =>
+          p.type === 'gesetzlich' ? { ...p, startYear: currentYear } : p,
+        )
+      : pensions,
+    settings.tax,
+  );
 
   const retirementYear = (() => {
-    if (!settings.retirementDate) return new Date().getFullYear();
+    if (!settings.retirementDate) return currentYear;
     const d = new Date(settings.retirementDate);
     const y = d.getFullYear();
-    return isNaN(y) ? new Date().getFullYear() : y;
+    return isNaN(y) ? currentYear : y;
   })();
 
   return (
@@ -98,6 +108,30 @@ function App() {
           />
         ) : (
           <>
+            {/* ─── Retirement Mode Toggle ─────────────────────────────── */}
+            <div className="flex gap-1 bg-gray-100 dark:bg-slate-800 rounded-xl p-1 self-start">
+              <button
+                onClick={() => setRetirementMode('planned')}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  retirementMode === 'planned'
+                    ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
+                }`}
+              >
+                Geplanter Renteneintritt
+              </button>
+              <button
+                onClick={() => setRetirementMode('current')}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  retirementMode === 'current'
+                    ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
+                }`}
+              >
+                Dieses Jahr
+              </button>
+            </div>
+
             {/* ─── Monthly Overview ───────────────────────────────── */}
             <OverviewChart
               breakdown={breakdown}
