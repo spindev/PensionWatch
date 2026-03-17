@@ -7,6 +7,14 @@ const SONDERAUSGABEN_PAUSCHBETRAG = 36; // Flat special expenses deduction
 const KV_BASISBEITRAGSSATZ = 14.6; // Base health insurance rate %
 const PV_BEITRAGSSATZ_MIT_KINDER = 3.05; // PV rate with children %
 const PV_BEITRAGSSATZ_OHNE_KINDER = 3.4; // PV rate without children %
+const ABGELTUNGSTEUER_SATZ = 25; // Capital gains tax rate %
+const SOLI_SATZ = 5.5; // Solidarity surcharge on Abgeltungsteuer %
+const SPARERPAUSCHBETRAG = 1_000; // Savings allowance per person (2023+)
+
+/** Rounds a monetary value to two decimal places (cent precision). */
+function roundToCents(value: number): number {
+  return Math.floor(value * 100) / 100;
+}
 
 // ─── Besteuerungsanteil gesetzliche Rente ─────────────────────────────────────
 
@@ -69,8 +77,10 @@ export function calcPensionDeductions(
     case 'ruerup':
     case 'riester':
     case 'privat':
+    case 'etf':
     default:
       // Private/subsidised pensions are generally KV-frei for GKV members
+      // ETF capital income is not subject to GKV contributions
       kvMonthly = 0;
       pvMonthly = 0;
       break;
@@ -103,6 +113,9 @@ function calcTaxableAmount(entry: PensionEntry): number {
     case 'privat':
       // Simplified: use Ertragsanteil approximation (here: 18% for age 65)
       return annualGross * 0.18;
+    case 'etf':
+      // ETF capital income is taxed via Abgeltungsteuer, not income tax (ESt)
+      return 0;
     default:
       return annualGross;
   }
@@ -162,6 +175,10 @@ export function calcTaxBreakdown(
       taxableAnnual: 0,
       incomeTaxAnnual: 0,
       incomeTaxMonthly: 0,
+      kapitalertragsteuerAnnual: 0,
+      kapitalertragsteuerMonthly: 0,
+      soliAnnual: 0,
+      soliMonthly: 0,
       kirchensteuerAnnual: 0,
       kirchensteuerMonthly: 0,
       totalDeductionsMonthly: 0,
@@ -191,13 +208,29 @@ export function calcTaxBreakdown(
   const incomeTaxAnnual = calcEinkommensteuer(zvE);
   const incomeTaxMonthly = incomeTaxAnnual / 12;
 
+  // Calculate Abgeltungsteuer + Soli for ETF pensions
+  const etfAnnualGross = pensions
+    .filter((p) => p.type === 'etf')
+    .reduce((s, p) => s + p.monthlyGross * 12, 0);
+  const kapitalertragsteuerBase = Math.max(0, etfAnnualGross - SPARERPAUSCHBETRAG);
+  const kapitalertragsteuerAnnual = roundToCents(
+    (kapitalertragsteuerBase * ABGELTUNGSTEUER_SATZ) / 100,
+  );
+  const kapitalertragsteuerMonthly = kapitalertragsteuerAnnual / 12;
+  const soliAnnual = roundToCents(kapitalertragsteuerAnnual * SOLI_SATZ / 100);
+  const soliMonthly = soliAnnual / 12;
+
   const kirchensteuerAnnual = taxSettings.kirchensteuer
-    ? Math.floor(incomeTaxAnnual * (taxSettings.kirchensteuerRate / 100) * 100) / 100
+    ? roundToCents(incomeTaxAnnual * (taxSettings.kirchensteuerRate / 100))
     : 0;
   const kirchensteuerMonthly = kirchensteuerAnnual / 12;
 
   const totalDeductionsMonthly =
-    totalSocialMonthly + incomeTaxMonthly + kirchensteuerMonthly;
+    totalSocialMonthly +
+    incomeTaxMonthly +
+    kapitalertragsteuerMonthly +
+    soliMonthly +
+    kirchensteuerMonthly;
 
   const netMonthly = totalGrossMonthly - totalDeductionsMonthly;
   const netAnnual = netMonthly * 12;
@@ -216,6 +249,10 @@ export function calcTaxBreakdown(
     taxableAnnual: zvE,
     incomeTaxAnnual,
     incomeTaxMonthly,
+    kapitalertragsteuerAnnual,
+    kapitalertragsteuerMonthly,
+    soliAnnual,
+    soliMonthly,
     kirchensteuerAnnual,
     kirchensteuerMonthly,
     totalDeductionsMonthly,

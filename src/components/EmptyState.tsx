@@ -41,6 +41,7 @@ const pensionTypes: { type: PensionType; example: string }[] = [
   { type: 'ruerup', example: '320 €/Monat' },
   { type: 'betrieblich', example: '280 €/Monat' },
   { type: 'riester', example: '180 €/Monat' },
+  { type: 'etf', example: '500 €/Monat' },
 ];
 
 export const EmptyState: React.FC<EmptyStateProps> = ({ onAddPension }) => {

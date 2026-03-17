@@ -18,6 +18,8 @@ export const OverviewChart: React.FC<OverviewChartProps> = ({
 }) => {
   const [showKvDetails, setShowKvDetails] = useState(false);
   const detailsRef = useRef<HTMLDivElement>(null);
+  const [showTaxDetails, setShowTaxDetails] = useState(false);
+  const taxDetailsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!showKvDetails) return;
@@ -30,9 +32,21 @@ export const OverviewChart: React.FC<OverviewChartProps> = ({
     return () => document.removeEventListener('mousedown', handleClick);
   }, [showKvDetails]);
 
+  useEffect(() => {
+    if (!showTaxDetails) return;
+    const handleClick = (e: MouseEvent) => {
+      if (taxDetailsRef.current && !taxDetailsRef.current.contains(e.target as Node)) {
+        setShowTaxDetails(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showTaxDetails]);
+
   if (breakdown.totalGrossMonthly === 0) return null;
 
   const pvRate = taxSettings.hasChildren ? 3.05 : 3.4;
+  const kapitalabgabenMonthly = breakdown.kapitalertragsteuerMonthly + breakdown.soliMonthly;
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-200 dark:border-slate-700">
@@ -51,6 +65,46 @@ export const OverviewChart: React.FC<OverviewChartProps> = ({
           value={breakdown.incomeTaxMonthly}
           color="bg-red-500"
           max={breakdown.totalGrossMonthly}
+        />
+        <SummaryRow
+          label="Kapitalabgaben"
+          value={kapitalabgabenMonthly}
+          color="bg-rose-400"
+          max={breakdown.totalGrossMonthly}
+          infoButton={
+            <div className="relative" ref={taxDetailsRef}>
+              <button
+                onClick={() => setShowTaxDetails((v) => !v)}
+                className="ml-1 w-4 h-4 rounded-full bg-gray-200 dark:bg-slate-600 text-gray-500 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors flex items-center justify-center flex-shrink-0 text-[10px] font-bold leading-none"
+                aria-label="Details zu Kapitalabgaben"
+              >
+                ?
+              </button>
+              {showTaxDetails && (
+                <div className="absolute left-0 top-6 z-50 w-72 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl shadow-xl p-3 space-y-2 text-xs">
+                  <p className="font-semibold text-gray-800 dark:text-white">Details Kapitalabgaben</p>
+                  <p className="text-gray-400 dark:text-slate-500 text-[11px] leading-snug">
+                    Auf Erträge aus ETF-Sparplänen wird Abgeltungsteuer erhoben. Der Sparerpauschbetrag
+                    (1.000 €/Jahr) wird vorab abgezogen.
+                  </p>
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500 dark:text-slate-400">Abgeltungsteuer (25 %)</span>
+                      <span className="font-medium text-gray-800 dark:text-white tabular-nums">{fmt(breakdown.kapitalertragsteuerMonthly)}</span>
+                    </div>
+                    <div className="border-t border-gray-100 dark:border-slate-600 pt-1.5 flex justify-between">
+                      <span className="text-gray-500 dark:text-slate-400">Solidaritätszuschlag (5,5 %)</span>
+                      <span className="font-medium text-gray-800 dark:text-white tabular-nums">{fmt(breakdown.soliMonthly)}</span>
+                    </div>
+                    <div className="border-t border-gray-100 dark:border-slate-600 pt-1.5 flex justify-between font-semibold text-gray-800 dark:text-white">
+                      <span>Gesamt</span>
+                      <span className="tabular-nums">{fmt(kapitalabgabenMonthly)}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          }
         />
         <SummaryRow
           label="Sozialabgaben"
