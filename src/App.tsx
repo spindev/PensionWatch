@@ -102,6 +102,7 @@ function App() {
             {/* ─── Monthly Overview ───────────────────────────────── */}
             <OverviewChart
               breakdown={breakdown}
+              taxSettings={settings.tax}
             />
 
             {/* ─── Pension Table ───────────────────────────────────── */}
