@@ -50,6 +50,16 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     }
   };
 
+  const handleSetKirchensteuerRate8 = () => {
+    setKirchensteuerRate('8');
+    handleTaxChange('kirchensteuerRate', 8);
+  };
+
+  const handleSetKirchensteuerRate9 = () => {
+    setKirchensteuerRate('9');
+    handleTaxChange('kirchensteuerRate', 9);
+  };
+
   const handleClearClick = () => {
     if (confirmClear) {
       onClearData();
@@ -193,13 +203,13 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               <span className="text-gray-600 dark:text-slate-400 text-xs">Kirchensteuersatz (%)</span>
               <div className="flex gap-2 mt-1">
                 <button
-                  onClick={() => { setKirchensteuerRate('8'); handleTaxChange('kirchensteuerRate', 8); }}
+                  onClick={handleSetKirchensteuerRate8}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-medium border transition-colors ${settings.tax.kirchensteuerRate === 8 ? 'bg-blue-600 border-blue-500 text-white' : 'border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700'}`}
                 >
                   8 % (Bayern, BW)
                 </button>
                 <button
-                  onClick={() => { setKirchensteuerRate('9'); handleTaxChange('kirchensteuerRate', 9); }}
+                  onClick={handleSetKirchensteuerRate9}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-medium border transition-colors ${settings.tax.kirchensteuerRate === 9 ? 'bg-blue-600 border-blue-500 text-white' : 'border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700'}`}
                 >
                   9 % (übrige)
