@@ -5,11 +5,11 @@ import type { PensionEntry, PensionDeductions, TaxBreakdown, TaxSettings } from 
 const WERBUNGSKOSTENPAUSCHALE = 102; // Flat deduction for pensioners
 const SONDERAUSGABEN_PAUSCHBETRAG = 36; // Flat special expenses deduction
 const KV_BASISBEITRAGSSATZ = 14.6; // Base health insurance rate %
-const PV_BEITRAGSSATZ_MIT_KINDER = 3.05; // PV rate with children %
-const PV_BEITRAGSSATZ_OHNE_KINDER = 3.4; // PV rate without children %
+const PV_BEITRAGSSATZ_MIT_KINDER = 3.6; // PV rate with children %
+const PV_BEITRAGSSATZ_OHNE_KINDER = 4.2; // PV rate without children (base + 0.6% surcharge) %
 const ABGELTUNGSTEUER_SATZ = 25; // Capital gains tax rate %
 const SOLI_SATZ = 5.5; // Solidarity surcharge on Abgeltungsteuer %
-const SPARERPAUSCHBETRAG = 1_000; // Savings allowance per person (2023+)
+export const SPARERPAUSCHBETRAG = 1_000; // Savings allowance per person (2023+)
 
 /** Rounds a monetary value to two decimal places (cent precision). */
 function roundToCents(value: number): number {
@@ -177,6 +177,8 @@ export function calcTaxBreakdown(
       incomeTaxMonthly: 0,
       kapitalertragsteuerAnnual: 0,
       kapitalertragsteuerMonthly: 0,
+      etfAnnualGross: 0,
+      kapitalertragsteuerBase: 0,
       soliAnnual: 0,
       soliMonthly: 0,
       kirchensteuerAnnual: 0,
@@ -251,6 +253,8 @@ export function calcTaxBreakdown(
     incomeTaxMonthly,
     kapitalertragsteuerAnnual,
     kapitalertragsteuerMonthly,
+    etfAnnualGross,
+    kapitalertragsteuerBase,
     soliAnnual,
     soliMonthly,
     kirchensteuerAnnual,

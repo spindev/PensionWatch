@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { TaxBreakdown, TaxSettings } from '../types';
+import { SPARERPAUSCHBETRAG } from '../utils/calculations';
 
 interface OverviewChartProps {
   breakdown: TaxBreakdown;
@@ -45,7 +46,7 @@ export const OverviewChart: React.FC<OverviewChartProps> = ({
 
   if (breakdown.totalGrossMonthly === 0) return null;
 
-  const pvRate = taxSettings.hasChildren ? 3.05 : 3.4;
+  const pvRate = taxSettings.hasChildren ? 3.6 : 4.2;
   const kapitalabgabenMonthly = breakdown.kapitalertragsteuerMonthly + breakdown.soliMonthly;
 
   return (
@@ -132,22 +133,29 @@ export const OverviewChart: React.FC<OverviewChartProps> = ({
                 {showTaxDetails && (
                   <div className="absolute left-0 bottom-full mb-1 z-50 w-72 max-w-full bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl shadow-xl p-3 space-y-2 text-xs">
                     <p className="font-semibold text-gray-800 dark:text-white">Details Kapitalabgaben</p>
-                    <p className="text-gray-400 dark:text-slate-500 text-[11px] leading-snug">
-                      Auf Erträge aus ETF-Sparplänen wird Abgeltungsteuer erhoben. Der Sparerpauschbetrag
-                      (1.000 €/Jahr) wird vorab vom jährlichen Kapitalertrag abgezogen – auf diesen Betrag
-                      fällt keine Steuer an. Erst der darüber liegende Betrag wird mit 25 % besteuert.
-                    </p>
                     <div className="space-y-1.5">
                       <div className="flex justify-between">
-                        <span className="text-gray-500 dark:text-slate-400">Abgeltungsteuer (25 %)</span>
-                        <span className="font-medium text-gray-800 dark:text-white tabular-nums">{fmt(breakdown.kapitalertragsteuerMonthly)}</span>
+                        <span className="text-gray-500 dark:text-slate-400">ETF-Erträge (jährlich)</span>
+                        <span className="font-medium text-gray-800 dark:text-white tabular-nums">{fmt(breakdown.etfAnnualGross)}</span>
                       </div>
-                      <div className="border-t border-gray-100 dark:border-slate-600 pt-1.5 flex justify-between">
+                      <div className="flex justify-between text-gray-400 dark:text-slate-500">
+                        <span>− Sparerpauschbetrag</span>
+                        <span className="tabular-nums">−{fmt(Math.min(breakdown.etfAnnualGross, SPARERPAUSCHBETRAG))}</span>
+                      </div>
+                      <div className="flex justify-between border-t border-gray-100 dark:border-slate-600 pt-1.5">
+                        <span className="text-gray-500 dark:text-slate-400">Steuerpflichtig (jährlich)</span>
+                        <span className="font-medium text-gray-800 dark:text-white tabular-nums">{fmt(breakdown.kapitalertragsteuerBase)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500 dark:text-slate-400">Abgeltungsteuer (25 %)</span>
+                        <span className="font-medium text-gray-800 dark:text-white tabular-nums">{fmt(breakdown.kapitalertragsteuerAnnual)}</span>
+                      </div>
+                      <div className="flex justify-between">
                         <span className="text-gray-500 dark:text-slate-400">Solidaritätszuschlag (5,5 %)</span>
-                        <span className="font-medium text-gray-800 dark:text-white tabular-nums">{fmt(breakdown.soliMonthly)}</span>
+                        <span className="font-medium text-gray-800 dark:text-white tabular-nums">{fmt(breakdown.soliAnnual)}</span>
                       </div>
                       <div className="border-t border-gray-100 dark:border-slate-600 pt-1.5 flex justify-between font-semibold text-gray-800 dark:text-white">
-                        <span>Gesamt</span>
+                        <span>Gesamt / Monat</span>
                         <span className="tabular-nums">{fmt(kapitalabgabenMonthly)}</span>
                       </div>
                     </div>

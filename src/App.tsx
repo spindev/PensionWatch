@@ -71,8 +71,7 @@ function App() {
 
   const retirementYear = (() => {
     if (!settings.retirementDate) return currentYear;
-    const d = new Date(settings.retirementDate);
-    const y = d.getFullYear();
+    const y = parseInt(settings.retirementDate.substring(0, 4), 10);
     return isNaN(y) ? currentYear : y;
   })();
 
