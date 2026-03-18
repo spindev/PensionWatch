@@ -85,6 +85,10 @@ export interface TaxBreakdown {
   incomeTaxAnnual: number;
   /** Monthly income tax */
   incomeTaxMonthly: number;
+  /** Total annual ETF gross income (before Sparerpauschbetrag) */
+  etfAnnualGross: number;
+  /** Taxable ETF base after Sparerpauschbetrag deduction */
+  kapitalertragsteuerBase: number;
   /** Annual capital gains tax (Abgeltungsteuer) on ETF income */
   kapitalertragsteuerAnnual: number;
   /** Monthly capital gains tax */
