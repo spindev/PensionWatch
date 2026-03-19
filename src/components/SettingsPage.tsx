@@ -119,7 +119,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               type="month"
               value={settings.retirementDate ? settings.retirementDate.substring(0, 7) : ''}
               onChange={(e) => onSave({ ...settings, retirementDate: e.target.value })}
-              className="mt-1 w-full px-3 py-2.5 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [color-scheme:light] dark:[color-scheme:dark]"
+              className="mt-1 w-full min-w-0 px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [color-scheme:light] dark:[color-scheme:dark]"
             />
           </label>
         </div>
