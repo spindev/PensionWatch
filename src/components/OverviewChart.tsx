@@ -17,10 +17,36 @@ export const OverviewChart: React.FC<OverviewChartProps> = ({
   breakdown,
   taxSettings,
 }) => {
+  const [showBruttoDetails, setShowBruttoDetails] = useState(false);
+  const bruttoDetailsRef = useRef<HTMLDivElement>(null);
+  const [showIncomeTaxDetails, setShowIncomeTaxDetails] = useState(false);
+  const incomeTaxDetailsRef = useRef<HTMLDivElement>(null);
   const [showKvDetails, setShowKvDetails] = useState(false);
   const detailsRef = useRef<HTMLDivElement>(null);
   const [showTaxDetails, setShowTaxDetails] = useState(false);
   const taxDetailsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showBruttoDetails) return;
+    const handleClick = (e: MouseEvent) => {
+      if (bruttoDetailsRef.current && !bruttoDetailsRef.current.contains(e.target as Node)) {
+        setShowBruttoDetails(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showBruttoDetails]);
+
+  useEffect(() => {
+    if (!showIncomeTaxDetails) return;
+    const handleClick = (e: MouseEvent) => {
+      if (incomeTaxDetailsRef.current && !incomeTaxDetailsRef.current.contains(e.target as Node)) {
+        setShowIncomeTaxDetails(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showIncomeTaxDetails]);
 
   useEffect(() => {
     if (!showKvDetails) return;
@@ -60,12 +86,75 @@ export const OverviewChart: React.FC<OverviewChartProps> = ({
           value={breakdown.totalGrossMonthly}
           color="bg-blue-500"
           max={breakdown.totalGrossMonthly}
+          infoButton={
+            <div ref={bruttoDetailsRef}>
+              <button
+                onClick={() => setShowBruttoDetails((v) => !v)}
+                className="ml-1 w-4 h-4 rounded-full bg-gray-200 dark:bg-slate-600 text-gray-500 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors flex items-center justify-center flex-shrink-0 text-[10px] font-bold leading-none"
+                aria-label="Details zu Brutto gesamt"
+              >
+                ?
+              </button>
+              {showBruttoDetails && (
+                <div className="absolute left-0 top-full mt-1 z-50 w-64 max-w-full bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl shadow-xl p-3 space-y-2 text-xs">
+                  <p className="font-semibold text-gray-800 dark:text-white">Details Brutto gesamt</p>
+                  <div className="space-y-1.5 text-gray-500 dark:text-slate-400">
+                    <p>Summe aller monatlichen Brutto-Renten vor Steuern und Sozialabgaben.</p>
+                    <div className="border-t border-gray-100 dark:border-slate-600 pt-1.5 flex justify-between font-semibold text-gray-800 dark:text-white">
+                      <span>Gesamt / Monat</span>
+                      <span className="tabular-nums">{fmt(breakdown.totalGrossMonthly)}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-400 dark:text-slate-500">
+                      <span>Gesamt / Jahr</span>
+                      <span className="tabular-nums">{fmt(breakdown.totalGrossAnnual)}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          }
         />
         <SummaryRow
           label="Einkommensteuer"
           value={breakdown.incomeTaxMonthly}
           color="bg-red-500"
           max={breakdown.totalGrossMonthly}
+          infoButton={
+            <div ref={incomeTaxDetailsRef}>
+              <button
+                onClick={() => setShowIncomeTaxDetails((v) => !v)}
+                className="ml-1 w-4 h-4 rounded-full bg-gray-200 dark:bg-slate-600 text-gray-500 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors flex items-center justify-center flex-shrink-0 text-[10px] font-bold leading-none"
+                aria-label="Details zu Einkommensteuer"
+              >
+                ?
+              </button>
+              {showIncomeTaxDetails && (
+                <div className="absolute left-0 top-full mt-1 z-50 w-72 max-w-full bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl shadow-xl p-3 space-y-2 text-xs">
+                  <p className="font-semibold text-gray-800 dark:text-white">Details Einkommensteuer</p>
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500 dark:text-slate-400">Zu versteuerndes Einkommen (jährl.)</span>
+                      <span className="font-medium text-gray-800 dark:text-white tabular-nums">{fmt(breakdown.taxableAnnual)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500 dark:text-slate-400">Einkommensteuer (§ 32a EStG, jährl.)</span>
+                      <span className="font-medium text-gray-800 dark:text-white tabular-nums">{fmt(breakdown.incomeTaxAnnual)}</span>
+                    </div>
+                    {taxSettings.kirchensteuer && breakdown.kirchensteuerAnnual > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-500 dark:text-slate-400">Kirchensteuer ({taxSettings.kirchensteuerRate} %)</span>
+                        <span className="font-medium text-gray-800 dark:text-white tabular-nums">{fmt(breakdown.kirchensteuerAnnual)}</span>
+                      </div>
+                    )}
+                    <div className="border-t border-gray-100 dark:border-slate-600 pt-1.5 flex justify-between font-semibold text-gray-800 dark:text-white">
+                      <span>Gesamt / Monat</span>
+                      <span className="tabular-nums">{fmt(breakdown.incomeTaxMonthly + breakdown.kirchensteuerMonthly)}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          }
         />
         <SummaryRow
           label="Sozialabgaben"
